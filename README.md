@@ -1,0 +1,13 @@
+# Home Assistant App: Checkmk Agent
+
+Überwacht den Home-Assistant-Host mit Checkmk (Pull, SSH oder TLS/Agent-Controller).
+
+## Installation
+1. In Home Assistant: *Einstellungen → Apps → App-Store → ⋮ → Repositories* →
+   `https://github.com/git4sim/ha-app-checkmk-agent` hinzufügen.
+2. „Checkmk Agent" installieren, Schutzmodus deaktivieren, konfigurieren, starten.
+
+Alternativ lokal: Ordner `checkmk_agent` nach `/addons/` auf dem HA-Host kopieren
+(Samba/SSH-App) und im App-Store „Nach Updates suchen" → erscheint unter *Lokale Apps*.
+
+Doku: [checkmk_agent/DOCS.md](checkmk_agent/DOCS.md)

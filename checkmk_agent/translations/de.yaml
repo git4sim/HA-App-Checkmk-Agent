@@ -1,0 +1,40 @@
+configuration:
+  mode:
+    name: Modus
+    description: "pull = klassisch Port 6556 (unverschlüsselt), ssh = Abruf per SSH (empfohlen), tls = Checkmk Agent-Controller (Registrierung, TLS/Push)"
+  checkmk_server:
+    name: Checkmk-Server
+    description: "z. B. https://monitoring.example.com - Agent und Plugins werden passend zur Server-Version von dort geladen"
+  checkmk_site:
+    name: Site
+    description: Name der Checkmk-Site, z. B. "mysite"
+  verify_ssl:
+    name: SSL-Zertifikat prüfen
+  pull_port:
+    name: Pull-Port
+  allowed_hosts:
+    name: Erlaubte Quellen (Pull)
+    description: "IPv4, IPv4-CIDR oder exakte IPv6 des Checkmk-Servers. Leer = alle (unsicher)."
+  ssh_port:
+    name: SSH-Port
+  ssh_authorized_keys:
+    name: SSH Public Keys
+    description: Public Keys des Checkmk-Site-Users. Werden automatisch auf den Agent-Aufruf beschränkt.
+  tls_hostname:
+    name: Hostname in Checkmk
+  tls_username:
+    name: Checkmk-Benutzer (Registrierung)
+  tls_password:
+    name: Passwort (Registrierung)
+  tls_trust_cert:
+    name: Server-Zertifikat vertrauen
+    description: Für die erste Registrierung nötig (keine interaktive Rückfrage möglich).
+  tls_force_register:
+    name: Neu registrieren erzwingen
+  ha_local_checks:
+    name: Home-Assistant-Checks
+    description: Local Checks für Core/Supervisor/OS-Updates, Apps, Health und Backups.
+  docker_plugin:
+    name: Docker-Plugin (mk_docker)
+  log_level:
+    name: Log-Level

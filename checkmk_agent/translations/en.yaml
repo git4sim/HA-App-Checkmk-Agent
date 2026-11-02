@@ -1,0 +1,39 @@
+configuration:
+  mode:
+    name: Mode
+    description: "pull = legacy port 6556 (plaintext), ssh = fetch via SSH (recommended), tls = Checkmk agent controller (registration, TLS/push)"
+  checkmk_server:
+    name: Checkmk server
+    description: "e.g. https://monitoring.example.com - agent and plugins are downloaded from there to match the server version"
+  checkmk_site:
+    name: Site
+  verify_ssl:
+    name: Verify SSL certificate
+  pull_port:
+    name: Pull port
+  allowed_hosts:
+    name: Allowed sources (pull)
+    description: "IPv4, IPv4 CIDR or exact IPv6 of the Checkmk server. Empty = everyone (insecure)."
+  ssh_port:
+    name: SSH port
+  ssh_authorized_keys:
+    name: SSH public keys
+    description: Public keys of the Checkmk site user. Automatically restricted to the agent command.
+  tls_hostname:
+    name: Host name in Checkmk
+  tls_username:
+    name: Checkmk user (registration)
+  tls_password:
+    name: Password (registration)
+  tls_trust_cert:
+    name: Trust server certificate
+    description: Required for the first registration (no interactive prompt available).
+  tls_force_register:
+    name: Force re-registration
+  ha_local_checks:
+    name: Home Assistant checks
+    description: Local checks for core/supervisor/OS updates, apps, health and backups.
+  docker_plugin:
+    name: Docker plugin (mk_docker)
+  log_level:
+    name: Log level

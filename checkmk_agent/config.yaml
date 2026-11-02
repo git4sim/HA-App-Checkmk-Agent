@@ -1,0 +1,63 @@
+name: Checkmk Agent
+version: "1.0.0"
+slug: checkmk_agent
+description: Überwacht den Home-Assistant-Host mit Checkmk (SSH, TLS oder Pull)
+url: https://github.com/git4sim/ha-app-checkmk-agent
+arch:
+  - amd64
+  - aarch64
+  - armv7
+init: false
+startup: services
+boot: auto
+# Host-Sicht: Netzwerk, Prozesse und Docker des Hosts
+host_network: true
+host_pid: true
+docker_api: true
+hassio_api: true
+hassio_role: manager
+homeassistant_api: false
+# Persistenter Ordner für eigene Plugins / Local Checks / Overrides
+map:
+  - addon_config:rw
+  - homeassistant_config:ro
+  - share:ro
+  - ssl:ro
+  - backup:ro
+  - media:ro
+options:
+  mode: pull
+  checkmk_server: ""
+  checkmk_site: ""
+  verify_ssl: true
+  pull_port: 6556
+  allowed_hosts: []
+  ssh_port: 6522
+  ssh_authorized_keys: []
+  tls_hostname: ""
+  tls_username: ""
+  tls_password: ""
+  tls_trust_cert: false
+  tls_force_register: false
+  ha_local_checks: true
+  docker_plugin: true
+  log_level: info
+schema:
+  mode: list(pull|ssh|tls)
+  checkmk_server: str?
+  checkmk_site: str?
+  verify_ssl: bool
+  pull_port: port
+  allowed_hosts:
+    - str
+  ssh_port: port
+  ssh_authorized_keys:
+    - str
+  tls_hostname: str?
+  tls_username: str?
+  tls_password: password?
+  tls_trust_cert: bool
+  tls_force_register: bool
+  ha_local_checks: bool
+  docker_plugin: bool
+  log_level: list(trace|debug|info|notice|warning|error|fatal)

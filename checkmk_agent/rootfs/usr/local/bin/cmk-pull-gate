@@ -1,0 +1,42 @@
+#!/bin/bash
+# Wird von socat pro Verbindung aufgerufen (Pull-Modus).
+# Prüft die Quell-IP gegen /run/cmk/allowed_hosts (IPv4, IPv4-CIDR oder exakte IPv6).
+
+peer="${SOCAT_PEERADDR#[}"
+peer="${peer%]}"
+peer="${peer#::ffff:}"
+
+ip2int() {
+    local IFS=. a b c d
+    read -r a b c d <<<"$1"
+    [[ $a =~ ^[0-9]+$ && $b =~ ^[0-9]+$ && $c =~ ^[0-9]+$ && $d =~ ^[0-9]+$ ]] || return 1
+    echo $(( (a << 24) | (b << 16) | (c << 8) | d ))
+}
+
+matches() {
+    local ip="$1" net="$2"
+    if [[ $net != */* ]]; then
+        [[ $ip == "$net" ]]
+        return
+    fi
+    local base="${net%/*}" bits="${net#*/}" ipi basei mask
+    ipi=$(ip2int "$ip") || return 1
+    basei=$(ip2int "$base") || return 1
+    (( bits >= 0 && bits <= 32 )) || return 1
+    mask=$(( bits == 0 ? 0 : (0xFFFFFFFF << (32 - bits)) & 0xFFFFFFFF ))
+    (( (ipi & mask) == (basei & mask) ))
+}
+
+if [[ -s /run/cmk/allowed_hosts ]]; then
+    allowed=0
+    while read -r net; do
+        [[ -z $net ]] && continue
+        if matches "$peer" "$net"; then allowed=1; break; fi
+    done </run/cmk/allowed_hosts
+    if (( ! allowed )); then
+        echo "[cmk-pull-gate] Verbindung von ${peer} abgelehnt (nicht in allowed_hosts)" >&2
+        exit 1
+    fi
+fi
+
+exec /usr/local/bin/check_mk_agent

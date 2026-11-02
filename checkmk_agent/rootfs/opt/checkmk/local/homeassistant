@@ -1,0 +1,67 @@
+#!/bin/bash
+# Checkmk Local Check: Status von Home Assistant über die Supervisor-API.
+TOKEN=$(cat /run/cmk/supervisor_token 2>/dev/null) || exit 0
+[[ -n $TOKEN ]] || exit 0
+
+api() {
+    curl -fsS --max-time 10 -H "Authorization: Bearer ${TOKEN}" "http://supervisor$1" 2>/dev/null | jq -c '.data'
+}
+
+# --- Core / Supervisor / OS ---------------------------------------------------
+for comp in core:Core supervisor:Supervisor os:OS; do
+    path="${comp%%:*}"; label="${comp#*:}"
+    if ! data=$(api "/${path}/info") || [[ -z $data || $data == null ]]; then
+        # OS gibt es auf Supervised-Installationen nicht -> still überspringen
+        [[ $path == os ]] && continue
+        echo "3 \"Home Assistant ${label}\" - Supervisor-API nicht erreichbar"
+        continue
+    fi
+    ver=$(jq -r '.version // "?"' <<<"$data")
+    latest=$(jq -r '.version_latest // "?"' <<<"$data")
+    upd=$(jq -r '.update_available // false' <<<"$data")
+    if [[ $upd == true ]]; then
+        echo "1 \"Home Assistant ${label}\" - Version ${ver}, Update verfügbar: ${latest}"
+    else
+        echo "0 \"Home Assistant ${label}\" - Version ${ver} (aktuell)"
+    fi
+done
+
+# --- Apps (Add-ons) -----------------------------------------------------------
+if data=$(api /addons) && [[ -n $data && $data != null ]]; then
+    total=$(jq '.addons | length' <<<"$data")
+    upd=$(jq '[.addons[] | select(.update_available == true)] | length' <<<"$data")
+    list=$(jq -r '[.addons[] | select(.update_available == true) | "\(.name): \(.version) -> \(.version_latest)"] | join("\\n")' <<<"$data")
+    state=0; (( upd > 0 )) && state=1
+    text="${total} Apps installiert, ${upd} mit Update"
+    [[ -n $list ]] && text="${text}\\n${list}"
+    echo "${state} \"Home Assistant Apps\" updates=${upd};1;;0 ${text}"
+fi
+
+# --- Resolution Center (unhealthy / unsupported / issues) --------------------
+if data=$(api /resolution/info) && [[ -n $data && $data != null ]]; then
+    unhealthy=$(jq -r '.unhealthy // [] | join(", ")' <<<"$data")
+    unsupported=$(jq -r '.unsupported // [] | join(", ")' <<<"$data")
+    issues=$(jq '.issues // [] | length' <<<"$data")
+    if [[ -n $unhealthy ]]; then
+        echo "2 \"Home Assistant Health\" issues=${issues} Unhealthy: ${unhealthy}"
+    elif [[ -n $unsupported ]]; then
+        echo "1 \"Home Assistant Health\" issues=${issues} Unsupported: ${unsupported}"
+    elif (( issues > 0 )); then
+        echo "1 \"Home Assistant Health\" issues=${issues} ${issues} offene Reparatur-Hinweise"
+    else
+        echo "0 \"Home Assistant Health\" issues=0 System gesund"
+    fi
+fi
+
+# --- Backups ------------------------------------------------------------------
+if data=$(api /backups) && [[ -n $data && $data != null ]]; then
+    newest=$(jq -r '[.backups[].date] | sort | last // empty' <<<"$data")
+    count=$(jq '.backups | length' <<<"$data")
+    if [[ -z $newest ]]; then
+        echo "1 \"Home Assistant Backup\" count=0 Keine Backups vorhanden"
+    else
+        age=$(( $(date +%s) - $(date -d "$newest" +%s) ))
+        # P = Checkmk berechnet den Status aus den Schwellwerten (2 Tage WARN, 7 Tage CRIT)
+        echo "P \"Home Assistant Backup\" age=${age};172800;604800|count=${count} Letztes Backup: ${newest}"
+    fi
+fi

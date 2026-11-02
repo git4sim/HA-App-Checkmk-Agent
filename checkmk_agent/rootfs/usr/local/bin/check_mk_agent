@@ -1,0 +1,6 @@
+#!/bin/bash
+# Wrapper: setzt die Verzeichnisse und startet den aktiven Checkmk-Agenten.
+export MK_LIBDIR=/usr/lib/check_mk_agent
+export MK_CONFDIR=/etc/check_mk
+export MK_VARDIR=/data/check_mk_agent
+exec /run/cmk/check_mk_agent.linux "$@"
