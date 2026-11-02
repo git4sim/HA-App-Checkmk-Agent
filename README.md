@@ -1,3 +1,5 @@
+<img src="checkmk_agent/logo.png" alt="Checkmk Agent für Home Assistant" width="250">
+
 # Home Assistant App: Checkmk Agent
 
 Überwacht den Home-Assistant-Host mit Checkmk (Pull, SSH oder TLS/Agent-Controller).
@@ -15,3 +17,5 @@ Doku: [checkmk_agent/DOCS.md](checkmk_agent/DOCS.md)
 ## Lizenz
 
 MIT, siehe [LICENSE](LICENSE). Der Checkmk-Agent selbst stammt von Checkmk GmbH und steht unter GPLv2.
+
+Icon und Logo sind eigene Entwürfe (Quellen in `assets/`), kein offizielles Checkmk-Logo.

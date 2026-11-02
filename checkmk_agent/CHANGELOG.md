@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.0.2
+- Icon und Logo hinzugefügt.
+
 ## 1.0.1
 - Mitgelieferter Fallback-Agent auf Checkmk 2.5.0 aktualisiert.
 - MIT-Lizenz hinzugefügt.
