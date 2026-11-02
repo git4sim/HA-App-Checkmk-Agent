@@ -11,3 +11,7 @@ Alternativ lokal: Ordner `checkmk_agent` nach `/addons/` auf dem HA-Host kopiere
 (Samba/SSH-App) und im App-Store „Nach Updates suchen" → erscheint unter *Lokale Apps*.
 
 Doku: [checkmk_agent/DOCS.md](checkmk_agent/DOCS.md)
+
+## Lizenz
+
+MIT, siehe [LICENSE](LICENSE). Der Checkmk-Agent selbst stammt von Checkmk GmbH und steht unter GPLv2.

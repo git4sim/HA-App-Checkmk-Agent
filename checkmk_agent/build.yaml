@@ -3,4 +3,4 @@ build_from:
   aarch64: ghcr.io/home-assistant/aarch64-base-debian:bookworm
   armv7: ghcr.io/home-assistant/armv7-base-debian:bookworm
 args:
-  CHECKMK_BRANCH: "2.4.0"
+  CHECKMK_BRANCH: "2.5.0"

@@ -3,7 +3,7 @@ FROM ${BUILD_FROM}
 
 # Fallback-Agent, falls kein Checkmk-Server angegeben ist.
 # Sollte zur Major-Version deines Checkmk-Servers passen.
-ARG CHECKMK_BRANCH=2.4.0
+ARG CHECKMK_BRANCH=2.5.0
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
