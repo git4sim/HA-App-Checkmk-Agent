@@ -83,6 +83,7 @@ if bashio::config.true 'ha_local_checks'; then
     install -m 600 /dev/null "$RUN/supervisor_token"
     printf '%s' "${SUPERVISOR_TOKEN}" >"$RUN/supervisor_token"
     ln -s /opt/checkmk/local/homeassistant "$LIBDIR/local/homeassistant"
+    bashio::config 'ha_ignore_issues' >"$RUN/ignore_issues" 2>/dev/null || : >"$RUN/ignore_issues"
 fi
 
 # Hinweis bei aktivem Schutzmodus: ohne Host-PID-Namespace sieht der Agent nur den Container.

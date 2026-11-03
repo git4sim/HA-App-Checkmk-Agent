@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.4
+- „Home Assistant Health“ nennt jetzt Typ, Kontext und Referenz der offenen Supervisor-Issues sowie vorgeschlagene Aktionen.
+- Neue Option `ha_ignore_issues`, um einzelne Issue-Typen auszublenden.
+
 ## 1.0.3
 - Neue Option `tls_server` für `cmk-agent-ctl register --server` inkl. Port (z. B. `host:8000`).
 

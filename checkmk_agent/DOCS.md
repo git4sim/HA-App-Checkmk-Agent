@@ -68,8 +68,21 @@ Samba- oder File-Editor-App erreichbar):
 |---|---|
 | Home Assistant Core / Supervisor / OS | Version, WARN bei verfügbarem Update |
 | Home Assistant Apps | Anzahl Apps mit Update (Liste im Langtext) |
-| Home Assistant Health | CRIT bei *unhealthy*, WARN bei *unsupported* oder Reparatur-Hinweisen |
+| Home Assistant Health | CRIT bei *unhealthy*, WARN bei *unsupported* oder offenen Supervisor-Issues (mit Typ im Text) |
 | Home Assistant Backup | Alter des letzten Backups (WARN > 2 Tage, CRIT > 7 Tage) |
+
+### Offene Supervisor-Issues
+
+Die Issues stammen aus dem Resolution Center des Supervisors, nicht aus den Core-Reparaturen.
+Manche davon zeigt die Oberfläche nicht an. Im Terminal (SSH-App) siehst du sie mit:
+
+```bash
+ha resolution info
+```
+
+Ein Issue mit vorgeschlagener Aktion behebst du mit `ha resolution suggestion apply <uuid>`,
+ein Issue verwirfst du mit `ha resolution issue dismiss <uuid>`. Typen, die du dauerhaft
+akzeptierst, trägst du in `ha_ignore_issues` ein (z. B. `no_current_backup`).
 
 ## Was nicht funktioniert
 

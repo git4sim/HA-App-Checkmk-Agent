@@ -37,6 +37,9 @@ configuration:
   ha_local_checks:
     name: Home-Assistant-Checks
     description: Local Checks für Core/Supervisor/OS-Updates, Apps, Health und Backups.
+  ha_ignore_issues:
+    name: Ignorierte Supervisor-Issues
+    description: "Issue-Typen, die im Service 'Home Assistant Health' nicht zu WARN führen, z. B. no_current_backup. Der Typ steht im Service-Text."
   docker_plugin:
     name: Docker-Plugin (mk_docker)
   log_level:

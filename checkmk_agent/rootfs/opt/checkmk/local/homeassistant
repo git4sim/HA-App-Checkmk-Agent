@@ -38,18 +38,35 @@ if data=$(api /addons) && [[ -n $data && $data != null ]]; then
 fi
 
 # --- Resolution Center (unhealthy / unsupported / issues) --------------------
+# Ignorierte Issue-Typen kommen aus der App-Option ha_ignore_issues.
+IGNORE_JSON=$(jq -R -s -c 'split("\n") | map(select(length > 0))' /run/cmk/ignore_issues 2>/dev/null || echo '[]')
 if data=$(api /resolution/info) && [[ -n $data && $data != null ]]; then
     unhealthy=$(jq -r '.unhealthy // [] | join(", ")' <<<"$data")
     unsupported=$(jq -r '.unsupported // [] | join(", ")' <<<"$data")
-    issues=$(jq '.issues // [] | length' <<<"$data")
+    # Offene Issues ohne ignorierte Typen, jeweils mit Typ, Kontext und Referenz
+    issue_list=$(jq -r --argjson ign "$IGNORE_JSON" '
+        [.issues // [] | .[] | select(.type as $t | $ign | index($t) | not)
+         | "\(.type) (\(.context)\(if .reference then ": " + .reference else "" end))"]
+        | join(", ")' <<<"$data")
+    issues=$(jq --argjson ign "$IGNORE_JSON" \
+        '[.issues // [] | .[] | select(.type as $t | $ign | index($t) | not)] | length' <<<"$data")
+    ignored=$(jq --argjson ign "$IGNORE_JSON" \
+        '[.issues // [] | .[] | select(.type as $t | $ign | index($t))] | length' <<<"$data")
+    suggestions=$(jq -r '[.suggestions // [] | .[] | "\(.type) (\(.context)\(if .reference then ": " + .reference else "" end))"] | join(", ")' <<<"$data")
+
+    long=""
+    [[ -n $issue_list ]]  && long="${long}\\nIssues: ${issue_list}"
+    [[ -n $suggestions ]] && long="${long}\\nVorgeschlagene Aktionen: ${suggestions}"
+    (( ignored > 0 ))     && long="${long}\\nIgnoriert: ${ignored}"
+
     if [[ -n $unhealthy ]]; then
-        echo "2 \"Home Assistant Health\" issues=${issues} Unhealthy: ${unhealthy}"
+        echo "2 \"Home Assistant Health\" issues=${issues} Unhealthy: ${unhealthy}${long}"
     elif [[ -n $unsupported ]]; then
-        echo "1 \"Home Assistant Health\" issues=${issues} Unsupported: ${unsupported}"
+        echo "1 \"Home Assistant Health\" issues=${issues} Unsupported: ${unsupported}${long}"
     elif (( issues > 0 )); then
-        echo "1 \"Home Assistant Health\" issues=${issues} ${issues} offene Reparatur-Hinweise"
+        echo "1 \"Home Assistant Health\" issues=${issues} Offene Issues: ${issue_list}${long}"
     else
-        echo "0 \"Home Assistant Health\" issues=0 System gesund"
+        echo "0 \"Home Assistant Health\" issues=0 System gesund${long}"
     fi
 fi
 
