@@ -188,12 +188,17 @@ tls)
 
     # --- Registrierung ---
     marker="$DATA/cmk-agent/.ha_registered"
-    want="${SERVER}|${SITE}|$(bashio::config 'tls_hostname' '')"
+    # --server für die Registrierung: tls_server (z. B. "host:8000") oder Host aus checkmk_server
+    srvhost=$(bashio::config 'tls_server' '')
+    if [[ -z $srvhost ]]; then
+        srvhost="${SERVER#*://}"; srvhost="${srvhost%%/*}"; srvhost="${srvhost%%:*}"
+    fi
+    want="${srvhost}|${SITE}|$(bashio::config 'tls_hostname' '')"
     if bashio::config.true 'tls_force_register' || [[ ! -f $marker || "$(cat "$marker")" != "$want" ]]; then
-        for opt in checkmk_server checkmk_site tls_hostname tls_username tls_password; do
+        for opt in checkmk_site tls_hostname tls_username tls_password; do
             bashio::config.has_value "$opt" || bashio::exit.nok "Modus tls: Option '${opt}' fehlt."
         done
-        srvhost="${SERVER#*://}"; srvhost="${srvhost%%/*}"; srvhost="${srvhost%%:*}"
+        [[ -n $srvhost ]] || bashio::exit.nok "Modus tls: tls_server oder checkmk_server setzen."
         args=(register --hostname "$(bashio::config 'tls_hostname')" --server "$srvhost" --site "$SITE"
               --user "$(bashio::config 'tls_username')" --password "$(bashio::config 'tls_password')")
         bashio::config.true 'tls_trust_cert' && args+=(--trust-cert)

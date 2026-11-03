@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.0.3
+- Neue Option `tls_server` für `cmk-agent-ctl register --server` inkl. Port (z. B. `host:8000`).
+
 ## 1.0.2
 - Icon und Logo hinzugefügt.
 

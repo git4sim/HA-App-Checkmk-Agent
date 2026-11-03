@@ -1,5 +1,5 @@
 name: Checkmk Agent
-version: "1.0.2"
+version: "1.0.3"
 slug: checkmk_agent
 description: Überwacht den Home-Assistant-Host mit Checkmk (SSH, TLS oder Pull)
 url: https://github.com/git4sim/ha-app-checkmk-agent
@@ -34,6 +34,7 @@ options:
   allowed_hosts: []
   ssh_port: 6522
   ssh_authorized_keys: []
+  tls_server: ""
   tls_hostname: ""
   tls_username: ""
   tls_password: ""
@@ -53,6 +54,7 @@ schema:
   ssh_port: port
   ssh_authorized_keys:
     - str
+  tls_server: str?
   tls_hostname: str?
   tls_username: str?
   tls_password: password?

@@ -19,6 +19,9 @@ configuration:
   ssh_authorized_keys:
     name: SSH public keys
     description: Public keys of the Checkmk site user. Automatically restricted to the agent command.
+  tls_server:
+    name: Registration server
+    description: "Value for cmk-agent-ctl --server, e.g. monitoring.example.com:8000 (agent receiver port). Empty = host from checkmk_server."
   tls_hostname:
     name: Host name in Checkmk
   tls_username:

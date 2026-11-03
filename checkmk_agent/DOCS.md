@@ -35,6 +35,8 @@ auf 6556 oder Push, je nach Host-Einstellung in Checkmk).
 
 - Benötigt: `checkmk_server`, `checkmk_site`, `tls_hostname` (muss in Checkmk existieren),
   `tls_username`/`tls_password` (Benutzer mit Recht zur Agent-Registrierung, z. B. Automationsuser).
+- `tls_server` entspricht `--server` von `cmk-agent-ctl register`, inkl. Agent-Receiver-Port
+  (z. B. `monitoring.example.com:8000`). Leer = Host aus `checkmk_server`, Port per REST-API ermittelt.
 - Beim ersten Mal `tls_trust_cert: true` setzen, es gibt keine interaktive Rückfrage.
 - Die Registrierung wird in `/data` gespeichert und überlebt Updates/Neustarts.
 - **Einschränkung:** Checkmk liefert `cmk-agent-ctl` nur für x86_64. Auf einem Raspberry Pi
@@ -73,3 +75,23 @@ Samba- oder File-Editor-App erreichbar):
 
 - systemd-Units, Paket-Updates (`apt`) des Hosts: HA OS hat keinen Paketmanager.
 - SMART/Sensoren nur mit Hardware-Zugriff (nicht freigegeben).
+
+### Beispiel: Entsprechung zu `cmk-agent-ctl register`
+
+```
+cmk-agent-ctl register --hostname LAB-Home --server monitoring.example.com:8000 \
+  --site cmk --user Agent-Registration --password '...'
+```
+
+entspricht dieser App-Konfiguration:
+
+```yaml
+mode: tls
+checkmk_server: https://monitoring.example.com   # Web-URL, für den Download von cmk-agent-ctl
+checkmk_site: cmk
+tls_server: monitoring.example.com:8000
+tls_hostname: LAB-Home
+tls_username: Agent-Registration
+tls_password: "..."
+tls_trust_cert: true
+```
